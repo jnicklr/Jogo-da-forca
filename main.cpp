@@ -7,49 +7,33 @@
 
 typedef struct {
 	char nome[50];
-	int vidas_restantes;
 } JOGADOR;
 
-int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int quantidade_letras_unicas, JOGADOR * jogador_1);
+
+
+int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int quantidade_letras_unicas, JOGADOR * jogadores, int quantidade_jogadores);
 
 int main(){
 	
-	// Define a linguagem local como português.
 	setlocale(0, "Portuguese");
 	
-	// Definindo o jogador da partida.
-	JOGADOR jogador_1;
-    strcpy(jogador_1.nome, "Nichollas");
-    jogador_1.vidas_restantes = 6;
+	char palavra_aleatoria[] = {"banana"};
+	int tamanho_palavra = strlen(palavra_aleatoria);
 	
-	char palavra_aleatoria[] = {"banana"}; // Palavra aleatória selecionada.
-	int tamanho_palavra = strlen(palavra_aleatoria); // Tamanho da palavra aleatória selecionada.
-	
-	// Lista com caracteres * que vão ser substituidos durante o jogo à medida que as palavras são acertadas.
-	char lista_vazia[tamanho_palavra + 1];
-    memset(lista_vazia, '*', tamanho_palavra);
-    lista_vazia[tamanho_palavra] = '\0';
-	
-	// Array descartável criado para pegar as palavras unicas da palavra aleatória de forma temporária
-	// e depois para ser copiada em um novo array.
 	char array_descart[tamanho_palavra+1];
 	memset(array_descart, '*', sizeof(array_descart));
 	array_descart[tamanho_palavra] = '\0';
 	
-	int quantidade_letras = 0; // Quantidade de letras únicas  na palavra, ex: banana = ban.
-	int palavra_repetida = 0; // Variável com valor booleano para dizer se a letra está repetida ou não.
+	int quantidade_letras = 0;
+	int palavra_repetida = 0;
 	
-	// Iteração para pegar as letras únicas da palavra:
-	// Iteração pela palavra aleatória.
 	for (int i = 0; i < tamanho_palavra; i++){
-		// Iteração pelo array descartável.
 		for (int j = 0; j < tamanho_palavra; j++){
 			if (array_descart[j] == palavra_aleatoria[i]){
 				palavra_repetida = 1;
 				break;
 			}
 		}
-		// Se não estiver repetida, vai ser adicionada no array descartável.
 		if (!palavra_repetida){
 			array_descart[quantidade_letras] = palavra_aleatoria[i];
 			quantidade_letras++;
@@ -57,7 +41,6 @@ int main(){
 		palavra_repetida = 0;
 	}
 	
-	// Array com as letras únicas.
 	char letras_unicas[quantidade_letras+1];
 	strncpy(letras_unicas, array_descart, quantidade_letras);
 	letras_unicas[quantidade_letras] = '\0';
@@ -69,6 +52,12 @@ int main(){
 	char nova_palavra[50];
 	
 	while (logado){
+			
+		char * lista_vazia;
+		lista_vazia = (char *)malloc(sizeof(lista_vazia) * (tamanho_palavra+1));
+	    memset(lista_vazia, '*', tamanho_palavra);
+	    lista_vazia[tamanho_palavra] = '\0';
+		
 		system("cls");
 		printf("----------------------------------\n");
 	    printf("|          Menu do Jogo          |\n");
@@ -83,7 +72,26 @@ int main(){
 	    
 	    switch (opcao){
 	    	case 1:
-	    		iniciar_jogo(palavra_aleatoria, lista_vazia, letras_unicas, quantidade_letras, &jogador_1);
+	    		{
+	    			int quantidade_jogadores;
+				    printf("Digite quantas pessoas irão jogar: ");
+				    scanf("%d", &quantidade_jogadores);
+				    fflush(stdin);
+				    
+				    JOGADOR * jogadores;
+				    
+				    jogadores = (JOGADOR *)malloc(sizeof(jogadores) * quantidade_jogadores);
+				    
+				    for (int i = 0; i < quantidade_jogadores; i++){
+				    	printf("Digite o nome do %d° jogador: ", i+1);
+				    	scanf("%50[^\n]s", jogadores[i].nome);
+				    	fflush(stdin);
+					}
+				    
+		    		iniciar_jogo(palavra_aleatoria, lista_vazia, letras_unicas, quantidade_letras, jogadores, quantidade_jogadores);
+		    		free(jogadores);
+		    		free(lista_vazia);
+				}
 	    		break;
 	    	case 2:
 	    		system("cls");
@@ -118,11 +126,10 @@ int main(){
 	return 0;
 }
 
-int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int quantidade_letras_unicas, JOGADOR * jogador_1){
+int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int quantidade_letras_unicas, JOGADOR * jogadores, int quantidade_jogadores){
 	
 	char letra_jogador;
 	
-	// Lista com caracteres * que vão ser substituidos durante o jogo à medida que as palavras são digitadas.
 	char letras_chutadas[quantidade_letras_unicas+7];
 	memset(letras_chutadas, '*', sizeof(letras_chutadas));
     letras_chutadas[quantidade_letras_unicas+6] = '\0';	
@@ -131,11 +138,15 @@ int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int
 	int acertos = 0;
 	int jogando = 1;
 	int contador_letras = 0;
+	int vidas_restantes = 6;
+	
+	int contador_jogadores = 0;
+	JOGADOR jogador_atual = jogadores[contador_jogadores];
 	
 	while (jogando){
-		
 		system("cls");
-		printf("Vidas do jogador: %d\n", jogador_1->vidas_restantes);
+		printf("Jogador Atual: %s\n", jogador_atual.nome);
+		printf("Vidas do jogador: %d\n", vidas_restantes);
 		printf("Acertos: %d\n", acertos);
 		printf("---------------\n");
 		printf("Palavra: %s\n", palavra_mostrada);
@@ -158,7 +169,7 @@ int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int
 				}
 			} 
 		}
-		
+			
 		if (acerto){
 			acertos += 1;
 			for (int i = 0; i < strlen(palavra); i++){
@@ -167,13 +178,18 @@ int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int
 				}
 			}
 		} else {
-			jogador_1->vidas_restantes -= 1;
+			vidas_restantes -= 1;
+			contador_jogadores++;
+			if (contador_jogadores >= quantidade_jogadores){
+				contador_jogadores = 0;
+			}
+			jogador_atual = jogadores[contador_jogadores];
 		}
-		
-		if (jogador_1->vidas_restantes == 0 || acertos == strlen(letras_unicas)){
+			
+		if (vidas_restantes == 0 || acertos == strlen(letras_unicas)){
 			jogando = 0;
 		}
-		
+			
 		acerto = 0;
 		letras_chutadas[contador_letras]=letra_jogador;
 		contador_letras++;
