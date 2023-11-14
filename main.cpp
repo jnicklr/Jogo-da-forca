@@ -10,53 +10,7 @@ typedef struct {
 	int vidas_restantes;
 } JOGADOR;
 
-int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int quantidade_letras_unicas, JOGADOR * jogador_1){
-	
-	char letra_jogador;
-	int acerto = 0;
-	int acertos = 0;
-	int jogando = 1;
-	
-	while (jogando){
-		
-		system("cls");
-		printf("Vidas do jogador: %d\n", jogador_1->vidas_restantes);
-		printf("Acertos: %d\n", acertos);
-		printf("---------------\n");
-		printf("Palavra: %s\n", palavra_mostrada);
-		printf("---------------\n");
-		printf("Escolha uma letra: ");
-		scanf("%c", &letra_jogador);
-		fflush(stdin);
-		
-		for (int i = 0; i < quantidade_letras_unicas; i++){
-			if (letra_jogador == letras_unicas[i]){
-				acerto = 1;
-			}
-		}
-		
-		if (acerto){
-			acertos += 1;
-			for (int i = 0; i < strlen(palavra); i++){
-				if (letra_jogador == palavra[i]){
-					palavra_mostrada[i] = letra_jogador;
-				}
-			}
-		} else {
-			jogador_1->vidas_restantes -= 1;
-		}
-		
-		if (jogador_1->vidas_restantes == 0){
-			jogando = 0;
-		}
-		
-		if (acertos == strlen(letras_unicas)){
-			jogando = 0;
-		}
-		
-		acerto = 0;
-	}
-}
+int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int quantidade_letras_unicas, JOGADOR * jogador_1);
 
 int main(){
 	
@@ -162,4 +116,66 @@ int main(){
 	}
 	
 	return 0;
+}
+
+int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int quantidade_letras_unicas, JOGADOR * jogador_1){
+	
+	char letra_jogador;
+	
+	// Lista com caracteres * que vão ser substituidos durante o jogo à medida que as palavras são digitadas.
+	char letras_chutadas[quantidade_letras_unicas+7];
+	memset(letras_chutadas, '*', sizeof(letras_chutadas));
+    letras_chutadas[quantidade_letras_unicas+6] = '\0';	
+	
+	int acerto = 0;
+	int acertos = 0;
+	int jogando = 1;
+	int contador_letras = 0;
+	
+	while (jogando){
+		
+		system("cls");
+		printf("Vidas do jogador: %d\n", jogador_1->vidas_restantes);
+		printf("Acertos: %d\n", acertos);
+		printf("---------------\n");
+		printf("Palavra: %s\n", palavra_mostrada);
+		printf("Letras chutadas: %s\n", letras_chutadas);
+		printf("---------------\n");
+		printf("Escolha uma letra: ");
+		scanf("%c", &letra_jogador);
+		fflush(stdin);
+		
+		for (int i = 0; i < quantidade_letras_unicas; i++){
+			if (letra_jogador == letras_unicas[i]){
+				acerto = 1;
+			}
+		}
+		
+		if (strlen(letras_chutadas) > 0){
+			for (int i = 0; i < strlen(letras_chutadas); i++){
+				if (letra_jogador == letras_chutadas[i]){
+					acerto = 0;
+				}
+			} 
+		}
+		
+		if (acerto){
+			acertos += 1;
+			for (int i = 0; i < strlen(palavra); i++){
+				if (letra_jogador == palavra[i]){
+					palavra_mostrada[i] = letra_jogador;
+				}
+			}
+		} else {
+			jogador_1->vidas_restantes -= 1;
+		}
+		
+		if (jogador_1->vidas_restantes == 0 || acertos == strlen(letras_unicas)){
+			jogando = 0;
+		}
+		
+		acerto = 0;
+		letras_chutadas[contador_letras]=letra_jogador;
+		contador_letras++;
+	}
 }
