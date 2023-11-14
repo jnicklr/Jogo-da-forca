@@ -3,22 +3,15 @@
 #include <string.h>
 #include <windows.h>
 #include <locale.h>
-#include "hangman.h"
+#include "telas.h"
 
 typedef struct {
 	char nome[50];
 } JOGADOR;
 
+// [quantidade_letras+1]
 
-
-int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int quantidade_letras_unicas, JOGADOR * jogadores, int quantidade_jogadores);
-
-int main(){
-	
-	setlocale(0, "Portuguese");
-	
-	char palavra_aleatoria[] = {"banana"};
-	int tamanho_palavra = strlen(palavra_aleatoria);
+char * pegarLetrasUnicas(int tamanho_palavra, char * palavra_aleatoria){
 	
 	char array_descart[tamanho_palavra+1];
 	memset(array_descart, '*', sizeof(array_descart));
@@ -41,15 +34,30 @@ int main(){
 		palavra_repetida = 0;
 	}
 	
-	char letras_unicas[quantidade_letras+1];
+	char* letras_unicas = (char*)malloc(quantidade_letras + 1);
 	strncpy(letras_unicas, array_descart, quantidade_letras);
 	letras_unicas[quantidade_letras] = '\0';
 	
+	return letras_unicas;
+}
+
+int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int quantidade_letras_unicas, JOGADOR * jogadores, int quantidade_jogadores);
+
+int main(){
+	
+	setlocale(0, "Portuguese");
+	
+	char palavra_aleatoria[] = {"nichollas"};
+	int tamanho_palavra = strlen(palavra_aleatoria);
+	
+	char * letras_unicas = pegarLetrasUnicas(tamanho_palavra, palavra_aleatoria);
+	
 	tela_carregamento();
 	
-	int logado = 1;
 	int opcao;
 	char nova_palavra[50];
+	
+	int logado = 1;
 	
 	while (logado){
 			
@@ -88,7 +96,7 @@ int main(){
 				    	fflush(stdin);
 					}
 				    
-		    		iniciar_jogo(palavra_aleatoria, lista_vazia, letras_unicas, quantidade_letras, jogadores, quantidade_jogadores);
+		    		iniciar_jogo(palavra_aleatoria, lista_vazia, letras_unicas, strlen(letras_unicas), jogadores, quantidade_jogadores);
 		    		free(jogadores);
 		    		free(lista_vazia);
 				}
@@ -145,6 +153,7 @@ int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int
 	
 	while (jogando){
 		system("cls");
+		estagios_boneco(vidas_restantes);
 		printf("Jogador Atual: %s\n", jogador_atual.nome);
 		printf("Vidas do jogador: %d\n", vidas_restantes);
 		printf("Acertos: %d\n", acertos);
