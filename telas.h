@@ -10,16 +10,16 @@ void menuPrincipal(){
 	printf("|      2 - Sair do Jogo          |\n");
 	printf("|      3 - Adicionar Palavra     |\n");
 	printf("----------------------------------\n");
-	printf("Digite sua opção desejada: ");
+	printf("Digite sua opï¿½ï¿½o desejada: ");
 }
 
 void menuCreditos(){
 	printf("----------------------------------\n");
-	printf("|             Créditos           |\n");
+	printf("|             Crï¿½ditos           |\n");
 	printf("----------------------------------\n");
-	printf("|      1 - José Nichollas        |\n");
-	printf("|      2 - João Victor           |\n");
-	printf("|      3 - João Pedro            |\n");
+	printf("|      1 - Josï¿½ Nichollas        |\n");
+	printf("|      2 - Joï¿½o Victor           |\n");
+	printf("|      3 - Joï¿½o Pedro            |\n");
 	printf("|      4 - Rodrigo Cordeiro      |\n");
 	printf("|      5 - Duan Oliveira         |\n");
 	printf("----------------------------------\n");
@@ -29,10 +29,10 @@ void menuAdicionarPalavras(){
 	printf("----------------------------------\n");
 	printf("|              Regras            |\n");
 	printf("----------------------------------\n");
-	printf("| 1 - Não deve ter acentuação    |\n");
-	printf("| 2 - Não deve ser uma frase     |\n");
-	printf("| 3 - Não pode conter maiúsculas |\n");
-	printf("| 4 - Não pode conter espaços    |\n");
+	printf("| 1 - Nï¿½o deve ter acentuaï¿½ï¿½o    |\n");
+	printf("| 2 - Nï¿½o deve ser uma frase     |\n");
+	printf("| 3 - Nï¿½o pode conter maiï¿½sculas |\n");
+	printf("| 4 - Nï¿½o pode conter espaï¿½os    |\n");
 	printf("----------------------------------\n");
 }
 

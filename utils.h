@@ -8,22 +8,6 @@ typedef struct {
 	int pontos;
 } JOGADOR;
 
-JOGADOR * inicializarJogadores(int quantidade_jogadores){
-	
-	JOGADOR * jogadores;
-				    
-	jogadores = (JOGADOR *)malloc(sizeof(jogadores) * quantidade_jogadores);
-					    
-	for (int i = 0; i < quantidade_jogadores; i++){
-		printf("Digite o nome do %d° jogador: ", i+1);
-		scanf("%50[^\n]s", &jogadores[i].nome);
-		fflush(stdin);
-		jogadores[i].pontos = 0;
-	}
-	
-	return jogadores;
-}
-
 int verificarAcerto(char letra_escolhida_jogador, char * letras_unicas, char * letras_chutadas){
 	
 	int acertando_letra = 0;
@@ -54,10 +38,10 @@ void verificarVitoria(int vidas_restantes, int quantidade_acertos, int quantidad
 	printf("----------------------------------\n");
 	
 	if (vidas_restantes == 0){	
-		printf("Ninguém acertou. A palavra era %s.\n", palavra_aleatoria);
+		printf("Ninguï¿½m acertou. A palavra era %s.\n", palavra_aleatoria);
 	} else {
 		jogadores[contador_jogadores].pontos += 1;
-		printf("O vencedor da partida é %s. A palavra era %s.\n", jogadores[contador_jogadores].nome, palavra_aleatoria);
+		printf("O vencedor da partida ï¿½ %s. A palavra era %s.\n", jogadores[contador_jogadores].nome, palavra_aleatoria);
 	}
 	system("pause");
 	system("cls");
@@ -119,7 +103,7 @@ void adicionarPalavra() {
         exit(1);
     }
 
-    printf("Digite a nova palavra a ser adicionada (sem espaços): ");
+    printf("Digite a nova palavra a ser adicionada (sem espaï¿½os): ");
     fgets(nova_palavra, sizeof(nova_palavra), stdin);
 
    
@@ -131,8 +115,8 @@ void adicionarPalavra() {
    
     for (int i = 0; nova_palavra[i] != '\0'; i++) {
         if (!verificarFormato(nova_palavra[i]) || nova_palavra[i] == ' ') {
-            printf("Tentativa inválida. A palavra deve conter apenas letras minúsculas, sem acentos, e sem espaços.\n");
-            printf("Apenas a primeira palavra será gravada.\n");
+            printf("Tentativa invï¿½lida. A palavra deve conter apenas letras minï¿½sculas, sem acentos, e sem espaï¿½os.\n");
+            printf("Apenas a primeira palavra serï¿½ gravada.\n");
             fclose(arquivo);
         }
     }

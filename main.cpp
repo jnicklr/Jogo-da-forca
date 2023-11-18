@@ -1,20 +1,86 @@
 #include <locale.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
 #include <locale.h>
+#include <time.h>
 #include "telas.h"
 #include "utils.h"
 
+char* pegarPalavraAleatoria() {
+    FILE *arquivo;
+    arquivo = fopen("palavras.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        exit(1);
+    }
+
+    int num_palavras = 0;
+    char c;
+    for (c = getc(arquivo); c != EOF; c = getc(arquivo)) {
+        if (c == '\n') {
+            num_palavras++;
+        }
+    }
+
+    srand(time(0));
+    int indice_aleatorio = rand() % num_palavras;
+
+    rewind(arquivo);
+
+    char palavra[50];  // Supondo que nenhuma palavra tenha mais de 50 caracteres
+    for (int i = 0; i <= indice_aleatorio; i++) {
+        fscanf(arquivo, "%s", palavra);
+    }
+
+    fclose(arquivo);
+
+    char *palavra_aleatoria = (char*)malloc(strlen(palavra) + 1);
+    strcpy(palavra_aleatoria, palavra);
+
+    return palavra_aleatoria;
+}
+
 int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores);
+
+void mostrarRanking(JOGADOR * jogadores, int quantidade_jogadores){
+	
+	system("cls");
+	
+	for (int i = 0; i < quantidade_jogadores - 1; i++) {
+        for (int j = i + 1; j < quantidade_jogadores; j++) {
+            if (jogadores[i].pontos < jogadores[j].pontos) {
+                JOGADOR variavel_temporaria = jogadores[i];
+                jogadores[i] = jogadores[j];
+                jogadores[j] = variavel_temporaria;
+            }
+        }
+    }
+
+    printf("Jogadores em ordem decrescente:\n");
+
+    for (int i = 0; i < quantidade_jogadores; i++) {
+        printf("%s - %d\n", jogadores[i].nome, jogadores[i].pontos);
+    }
+}
 
 void criarPartida(){
 	int quantidade_jogadores;
-	printf("Digite quantas pessoas irão jogar: ");
+	printf("Digite quantas pessoas irï¿½o jogar: ");
 	scanf("%d", &quantidade_jogadores);
 	fflush(stdin);	
 	
-	JOGADOR * jogadores = inicializarJogadores(quantidade_jogadores);
+	JOGADOR * jogadores;
+				    
+	jogadores = (JOGADOR *)malloc(sizeof(JOGADOR) * quantidade_jogadores);
+					    
+	for (int i = 0; i < quantidade_jogadores; i++){
+		printf("Digite o nome do %dï¿½ jogador: ", i+1);
+		scanf("%50[^\n]s", &(jogadores[i].nome));
+		fflush(stdin);
+		jogadores[i].pontos = 0;
+	}
 	
 	char repetir_jogo = 'S';
 	while(repetir_jogo == 'S'){
@@ -23,6 +89,8 @@ void criarPartida(){
 		scanf("%c", &repetir_jogo);
 		fflush(stdin);	
 	}
+	
+	mostrarRanking(jogadores, quantidade_jogadores);
 }
 
 int main(){
@@ -66,7 +134,7 @@ int main(){
 
 int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 	
-	char palavra_aleatoria[] = {"banana"};
+	char * palavra_aleatoria = pegarPalavraAleatoria();
 	int tamanho_palavra = strlen(palavra_aleatoria);
 	
 	char * letras_censuradas = preencherArray(tamanho_palavra);
@@ -83,8 +151,6 @@ int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 	int contador_jogadores = 0;
 	char letra_escolhida_jogador;
 	
-	JOGADOR jogador_atual = jogadores[contador_jogadores];
-	
 	int continuar_jogo = 1;
 	
 	while (continuar_jogo){
@@ -99,11 +165,13 @@ int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 			printf("----------------------------------\n");
 			estagiosBoneco(vidas_restantes);
 			printf("----------------------------------\n");
-			printf("Jogador Atual: %s\n", jogador_atual.nome);
+			printf("Jogador Atual: %s\n", jogadores[contador_jogadores].nome);
 			printf("Vidas Restantes: %d\n", vidas_restantes);
 			printf("Quantidade de Acertos: %d\n", quantidade_acertos);
 			printf("----------------------------------\n");
-			printf("Letras Visíveis: %s\n", letras_censuradas);
+			printf("Contador: %d\n", contador_jogadores);
+			printf("----------------------------------\n");
+			printf("Letras Visï¿½veis: %s\n", letras_censuradas);
 			printf("Letras Digitadas: %s\n", letras_chutadas);
 			printf("----------------------------------\n");
 			printf("Digite uma letras: ");
@@ -123,7 +191,6 @@ int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 				if (contador_jogadores >= quantidade_jogadores){
 					contador_jogadores = 0;
 				}
-				jogador_atual = jogadores[contador_jogadores];
 			}
 			
 			letras_chutadas[contador_letras]=letra_escolhida_jogador;
