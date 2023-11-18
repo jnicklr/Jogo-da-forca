@@ -4,126 +4,56 @@
 #include <windows.h>
 #include <locale.h>
 #include "telas.h"
+#include "utils.h"
 
-typedef struct {
-	char nome[50];
-} JOGADOR;
+int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores);
 
-// [quantidade_letras+1]
-
-char * pegarLetrasUnicas(int tamanho_palavra, char * palavra_aleatoria){
+void criarPartida(){
+	int quantidade_jogadores;
+	printf("Digite quantas pessoas irão jogar: ");
+	scanf("%d", &quantidade_jogadores);
+	fflush(stdin);	
 	
-	char array_descart[tamanho_palavra+1];
-	memset(array_descart, '*', sizeof(array_descart));
-	array_descart[tamanho_palavra] = '\0';
+	JOGADOR * jogadores = inicializarJogadores(quantidade_jogadores);
 	
-	int quantidade_letras = 0;
-	int palavra_repetida = 0;
-	
-	for (int i = 0; i < tamanho_palavra; i++){
-		for (int j = 0; j < tamanho_palavra; j++){
-			if (array_descart[j] == palavra_aleatoria[i]){
-				palavra_repetida = 1;
-				break;
-			}
-		}
-		if (!palavra_repetida){
-			array_descart[quantidade_letras] = palavra_aleatoria[i];
-			quantidade_letras++;
-		}
-		palavra_repetida = 0;
+	char repetir_jogo = 'S';
+	while(repetir_jogo == 'S'){
+		iniciarJogo(jogadores, quantidade_jogadores);
+		printf("Digite 'S' caso queira iniciar um novo jogo: ");
+		scanf("%c", &repetir_jogo);
+		fflush(stdin);	
 	}
-	
-	char* letras_unicas = (char*)malloc(quantidade_letras + 1);
-	strncpy(letras_unicas, array_descart, quantidade_letras);
-	letras_unicas[quantidade_letras] = '\0';
-	
-	return letras_unicas;
 }
-
-int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int quantidade_letras_unicas, JOGADOR * jogadores, int quantidade_jogadores);
 
 int main(){
 	
 	setlocale(0, "Portuguese");
 	
-	char palavra_aleatoria[] = {"nichollas"};
-	int tamanho_palavra = strlen(palavra_aleatoria);
-	
-	char * letras_unicas = pegarLetrasUnicas(tamanho_palavra, palavra_aleatoria);
-	
-	tela_carregamento();
+	telaCarregamento();
 	
 	int opcao;
-	char nova_palavra[50];
-	
 	int logado = 1;
 	
 	while (logado){
-			
-		char * lista_vazia;
-		lista_vazia = (char *)malloc(sizeof(lista_vazia) * (tamanho_palavra+1));
-	    memset(lista_vazia, '*', tamanho_palavra);
-	    lista_vazia[tamanho_palavra] = '\0';
 		
 		system("cls");
-		printf("----------------------------------\n");
-	    printf("|          Menu do Jogo          |\n");
-	    printf("----------------------------------\n");
-	    printf("|      1 - Iniciar o Jogo        |\n");
-	    printf("|      2 - Sair do Jogo          |\n");
-	    printf("|      3 - Adicionar Palavra     |\n");
-	    printf("----------------------------------\n");
-	    printf("Digite sua opção desejada: ");
+		menuPrincipal();
 	    scanf("%d", &opcao);
 	    fflush(stdin);
 	    
+	    system("cls");
 	    switch (opcao){
 	    	case 1:
-	    		{
-	    			int quantidade_jogadores;
-				    printf("Digite quantas pessoas irão jogar: ");
-				    scanf("%d", &quantidade_jogadores);
-				    fflush(stdin);
-				    
-				    JOGADOR * jogadores;
-				    
-				    jogadores = (JOGADOR *)malloc(sizeof(jogadores) * quantidade_jogadores);
-				    
-				    for (int i = 0; i < quantidade_jogadores; i++){
-				    	printf("Digite o nome do %d° jogador: ", i+1);
-				    	scanf("%50[^\n]s", jogadores[i].nome);
-				    	fflush(stdin);
-					}
-				    
-		    		iniciar_jogo(palavra_aleatoria, lista_vazia, letras_unicas, strlen(letras_unicas), jogadores, quantidade_jogadores);
-		    		free(jogadores);
-		    		free(lista_vazia);
-				}
+	    		criarPartida();
 	    		break;
 	    	case 2:
-	    		system("cls");
-				printf("----------------------------------\n");
-			    printf("|             Créditos           |\n");
-			    printf("----------------------------------\n");
-			    printf("|      1 - José Nichollas        |\n");
-			    printf("|      2 - João Victor           |\n");
-			    printf("|      3 - João Pedro            |\n");
-			    printf("|      4 - Rodrigo Cordeiro      |\n");
-			    printf("|      5 - Duan Oliveira         |\n");
-			    printf("----------------------------------\n");
+				menuCreditos();
 		    	logado = 0;
 	    		break;
 	    	case 3:
-		    	system("cls");
-				printf("----------------------------------\n");
-			    printf("|              Regras            |\n");
-			    printf("----------------------------------\n");
-			    printf("|   1 - Não deve ter sinal       |\n");
-			    printf("|   2 - Não deve ser muito longa |\n");
-			    printf("----------------------------------\n");
-			    printf("Digite a palavra desejada: ");
-		    	scanf("%50[^\n]s", nova_palavra);
+				menuAdicionarPalavras();
+				adicionarPalavra();
+				break;
 		    default:
 		    	break;
 		}
@@ -134,73 +64,74 @@ int main(){
 	return 0;
 }
 
-int iniciar_jogo(char* palavra, char* palavra_mostrada, char* letras_unicas, int quantidade_letras_unicas, JOGADOR * jogadores, int quantidade_jogadores){
+int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 	
-	char letra_jogador;
+	char palavra_aleatoria[] = {"banana"};
+	int tamanho_palavra = strlen(palavra_aleatoria);
 	
-	char letras_chutadas[quantidade_letras_unicas+7];
-	memset(letras_chutadas, '*', sizeof(letras_chutadas));
-    letras_chutadas[quantidade_letras_unicas+6] = '\0';	
+	char * letras_censuradas = preencherArray(tamanho_palavra);
 	
-	int acerto = 0;
-	int acertos = 0;
-	int jogando = 1;
-	int contador_letras = 0;
+	char * letras_unicas = pegarLetrasUnicas(tamanho_palavra, palavra_aleatoria);
+	
+	int quantidade_letras_unicas = strlen(letras_unicas);
+	
+	char * letras_chutadas = preencherArray(quantidade_letras_unicas+6);
+	
+	int quantidade_acertos = 0;
 	int vidas_restantes = 6;
-	
+	int contador_letras = 0;
 	int contador_jogadores = 0;
+	char letra_escolhida_jogador;
+	
 	JOGADOR jogador_atual = jogadores[contador_jogadores];
 	
-	while (jogando){
-		system("cls");
-		estagios_boneco(vidas_restantes);
-		printf("Jogador Atual: %s\n", jogador_atual.nome);
-		printf("Vidas do jogador: %d\n", vidas_restantes);
-		printf("Acertos: %d\n", acertos);
-		printf("---------------\n");
-		printf("Palavra: %s\n", palavra_mostrada);
-		printf("Letras chutadas: %s\n", letras_chutadas);
-		printf("---------------\n");
-		printf("Escolha uma letra: ");
-		scanf("%c", &letra_jogador);
-		fflush(stdin);
-		
-		for (int i = 0; i < quantidade_letras_unicas; i++){
-			if (letra_jogador == letras_unicas[i]){
-				acerto = 1;
-			}
-		}
-		
-		if (strlen(letras_chutadas) > 0){
-			for (int i = 0; i < strlen(letras_chutadas); i++){
-				if (letra_jogador == letras_chutadas[i]){
-					acerto = 0;
-				}
-			} 
-		}
-			
-		if (acerto){
-			acertos += 1;
-			for (int i = 0; i < strlen(palavra); i++){
-				if (letra_jogador == palavra[i]){
-					palavra_mostrada[i] = letra_jogador;
-				}
-			}
+	int continuar_jogo = 1;
+	
+	while (continuar_jogo){
+		if (vidas_restantes == 0 || quantidade_acertos == quantidade_letras_unicas){
+			verificarVitoria(vidas_restantes, quantidade_acertos, quantidade_letras_unicas, jogadores, contador_jogadores, palavra_aleatoria);
+			continuar_jogo = 0;
 		} else {
-			vidas_restantes -= 1;
-			contador_jogadores++;
-			if (contador_jogadores >= quantidade_jogadores){
-				contador_jogadores = 0;
+			system("cls");
+		
+			printf("----------------------------------\n");
+			printf("|         Status do Jogo         |\n");
+			printf("----------------------------------\n");
+			estagiosBoneco(vidas_restantes);
+			printf("----------------------------------\n");
+			printf("Jogador Atual: %s\n", jogador_atual.nome);
+			printf("Vidas Restantes: %d\n", vidas_restantes);
+			printf("Quantidade de Acertos: %d\n", quantidade_acertos);
+			printf("----------------------------------\n");
+			printf("Letras Visíveis: %s\n", letras_censuradas);
+			printf("Letras Digitadas: %s\n", letras_chutadas);
+			printf("----------------------------------\n");
+			printf("Digite uma letras: ");
+			scanf("%c", &letra_escolhida_jogador);
+			fflush(stdin);
+				
+			if (verificarAcerto(letra_escolhida_jogador, letras_unicas, letras_chutadas) == 1){
+				quantidade_acertos += 1;
+				for (int i = 0; i < strlen(palavra_aleatoria); i++){
+					if (letra_escolhida_jogador == palavra_aleatoria[i]){
+						letras_censuradas[i] = letra_escolhida_jogador;
+					}
+				}
+			} else {
+				vidas_restantes -= 1;
+				contador_jogadores++;
+				if (contador_jogadores >= quantidade_jogadores){
+					contador_jogadores = 0;
+				}
+				jogador_atual = jogadores[contador_jogadores];
 			}
-			jogador_atual = jogadores[contador_jogadores];
-		}
 			
-		if (vidas_restantes == 0 || acertos == strlen(letras_unicas)){
-			jogando = 0;
+			letras_chutadas[contador_letras]=letra_escolhida_jogador;
+			contador_letras++;
 		}
-			
-		acerto = 0;
-		letras_chutadas[contador_letras]=letra_jogador;
-		contador_letras++;
 	}
+	
+	free(letras_censuradas);
+	free(letras_unicas);
+	free(letras_chutadas);
 }
