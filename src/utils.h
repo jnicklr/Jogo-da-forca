@@ -38,10 +38,10 @@ void verificarVitoria(int vidas_restantes, int quantidade_acertos, int quantidad
 	printf("----------------------------------\n");
 	
 	if (vidas_restantes == 0){	
-		printf("Ninguï¿½m acertou. A palavra era %s.\n", palavra_aleatoria);
+		printf("Ninguém acertou. A palavra era %s.\n", palavra_aleatoria);
 	} else {
 		jogadores[contador_jogadores].pontos += 1;
-		printf("O vencedor da partida ï¿½ %s. A palavra era %s.\n", jogadores[contador_jogadores].nome, palavra_aleatoria);
+		printf("O vencedor da partida é %s. A palavra era %s.\n", jogadores[contador_jogadores].nome, palavra_aleatoria);
 	}
 	system("pause");
 	system("cls");
@@ -103,7 +103,7 @@ void adicionarPalavra() {
         exit(1);
     }
 
-    printf("Digite a nova palavra a ser adicionada (sem espaï¿½os): ");
+    printf("Digite a nova palavra a ser adicionada: ");
     fgets(nova_palavra, sizeof(nova_palavra), stdin);
 
    
@@ -115,8 +115,8 @@ void adicionarPalavra() {
    
     for (int i = 0; nova_palavra[i] != '\0'; i++) {
         if (!verificarFormato(nova_palavra[i]) || nova_palavra[i] == ' ') {
-            printf("Tentativa invï¿½lida. A palavra deve conter apenas letras minï¿½sculas, sem acentos, e sem espaï¿½os.\n");
-            printf("Apenas a primeira palavra serï¿½ gravada.\n");
+            printf("Tentativa inválida. A palavra deve conter apenas letras minúsculas, sem acentos, e sem espaços.\n");
+            printf("Apenas a primeira palavra será gravada.\n");
             fclose(arquivo);
         }
     }
@@ -124,4 +124,60 @@ void adicionarPalavra() {
     fprintf(arquivo, "%s\n", nova_palavra);
     fclose(arquivo);
     printf("Palavra(s) adicionada(s) com sucesso!\n");
+}
+
+char * pegarPalavraAleatoria() {
+    FILE *arquivo;
+    arquivo = fopen("palavras.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        exit(1);
+    }
+
+    int num_palavras = 0;
+    char c;
+    for (c = getc(arquivo); c != EOF; c = getc(arquivo)) {
+        if (c == '\n') {
+            num_palavras++;
+        }
+    }
+
+    srand(time(0));
+    int indice_aleatorio = rand() % num_palavras;
+
+    rewind(arquivo);
+
+    char palavra[50];  // Supondo que nenhuma palavra tenha mais de 50 caracteres
+    for (int i = 0; i <= indice_aleatorio; i++) {
+        fscanf(arquivo, "%s", palavra);
+    }
+
+    fclose(arquivo);
+
+    char *palavra_aleatoria = (char*)malloc(strlen(palavra) + 1);
+    strcpy(palavra_aleatoria, palavra);
+
+    return palavra_aleatoria;
+}
+
+void mostrarRanking(JOGADOR * jogadores, int quantidade_jogadores){
+	
+	system("cls");
+	
+	for (int i = 0; i < quantidade_jogadores - 1; i++) {
+        for (int j = i + 1; j < quantidade_jogadores; j++) {
+            if (jogadores[i].pontos < jogadores[j].pontos) {
+                JOGADOR variavel_temporaria = jogadores[i];
+                jogadores[i] = jogadores[j];
+                jogadores[j] = variavel_temporaria;
+            }
+        }
+    }
+	printf("----------------------------------\n");
+	printf("|         Ranking da Partida     |\n");
+	printf("----------------------------------\n");
+    for (int i = 0; i < quantidade_jogadores; i++) {
+        printf("%d° %s - %d\n", i+1, jogadores[i].nome, jogadores[i].pontos);
+    }
+    printf("----------------------------------\n");
 }

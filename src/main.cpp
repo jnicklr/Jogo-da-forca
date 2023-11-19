@@ -8,90 +8,9 @@
 #include "telas.h"
 #include "utils.h"
 
-char* pegarPalavraAleatoria() {
-    FILE *arquivo;
-    arquivo = fopen("palavras.txt", "r");
-    if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo.\n");
-        exit(1);
-    }
-
-    int num_palavras = 0;
-    char c;
-    for (c = getc(arquivo); c != EOF; c = getc(arquivo)) {
-        if (c == '\n') {
-            num_palavras++;
-        }
-    }
-
-    srand(time(0));
-    int indice_aleatorio = rand() % num_palavras;
-
-    rewind(arquivo);
-
-    char palavra[50];  // Supondo que nenhuma palavra tenha mais de 50 caracteres
-    for (int i = 0; i <= indice_aleatorio; i++) {
-        fscanf(arquivo, "%s", palavra);
-    }
-
-    fclose(arquivo);
-
-    char *palavra_aleatoria = (char*)malloc(strlen(palavra) + 1);
-    strcpy(palavra_aleatoria, palavra);
-
-    return palavra_aleatoria;
-}
-
 int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores);
 
-void mostrarRanking(JOGADOR * jogadores, int quantidade_jogadores){
-	
-	system("cls");
-	
-	for (int i = 0; i < quantidade_jogadores - 1; i++) {
-        for (int j = i + 1; j < quantidade_jogadores; j++) {
-            if (jogadores[i].pontos < jogadores[j].pontos) {
-                JOGADOR variavel_temporaria = jogadores[i];
-                jogadores[i] = jogadores[j];
-                jogadores[j] = variavel_temporaria;
-            }
-        }
-    }
-
-    printf("Jogadores em ordem decrescente:\n");
-
-    for (int i = 0; i < quantidade_jogadores; i++) {
-        printf("%s - %d\n", jogadores[i].nome, jogadores[i].pontos);
-    }
-}
-
-void criarPartida(){
-	int quantidade_jogadores;
-	printf("Digite quantas pessoas irï¿½o jogar: ");
-	scanf("%d", &quantidade_jogadores);
-	fflush(stdin);	
-	
-	JOGADOR * jogadores;
-				    
-	jogadores = (JOGADOR *)malloc(sizeof(JOGADOR) * quantidade_jogadores);
-					    
-	for (int i = 0; i < quantidade_jogadores; i++){
-		printf("Digite o nome do %dï¿½ jogador: ", i+1);
-		scanf("%50[^\n]s", &(jogadores[i].nome));
-		fflush(stdin);
-		jogadores[i].pontos = 0;
-	}
-	
-	char repetir_jogo = 'S';
-	while(repetir_jogo == 'S'){
-		iniciarJogo(jogadores, quantidade_jogadores);
-		printf("Digite 'S' caso queira iniciar um novo jogo: ");
-		scanf("%c", &repetir_jogo);
-		fflush(stdin);	
-	}
-	
-	mostrarRanking(jogadores, quantidade_jogadores);
-}
+void criarPartida();
 
 int main(){
 	
@@ -169,9 +88,7 @@ int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 			printf("Vidas Restantes: %d\n", vidas_restantes);
 			printf("Quantidade de Acertos: %d\n", quantidade_acertos);
 			printf("----------------------------------\n");
-			printf("Contador: %d\n", contador_jogadores);
-			printf("----------------------------------\n");
-			printf("Letras Visï¿½veis: %s\n", letras_censuradas);
+			printf("Letras Visíveis: %s\n", letras_censuradas);
 			printf("Letras Digitadas: %s\n", letras_chutadas);
 			printf("----------------------------------\n");
 			printf("Digite uma letras: ");
@@ -198,7 +115,37 @@ int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 		}
 	}
 	
+	free(palavra_aleatoria);
 	free(letras_censuradas);
 	free(letras_unicas);
 	free(letras_chutadas);
+}
+
+void criarPartida(){
+	int quantidade_jogadores;
+	printf("Digite quantas pessoas irão jogar: ");
+	scanf("%d", &quantidade_jogadores);
+	fflush(stdin);	
+	
+	JOGADOR * jogadores;
+				    
+	jogadores = (JOGADOR *)malloc(sizeof(JOGADOR) * quantidade_jogadores);
+					    
+	for (int i = 0; i < quantidade_jogadores; i++){
+		printf("Digite o nome do %d° jogador: ", i+1);
+		scanf("%50[^\n]s", &(jogadores[i].nome));
+		fflush(stdin);
+		jogadores[i].pontos = 0;
+	}
+	
+	char repetir_jogo = 'S';
+	while(repetir_jogo == 'S'){
+		iniciarJogo(jogadores, quantidade_jogadores);
+		printf("Digite 'S' caso queira iniciar um novo jogo: ");
+		scanf("%c", &repetir_jogo);
+		fflush(stdin);	
+	}
+	
+	mostrarRanking(jogadores, quantidade_jogadores);
+	free(jogadores);
 }
