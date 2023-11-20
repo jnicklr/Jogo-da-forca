@@ -4,7 +4,6 @@
 #include <string.h>
 #include <windows.h>
 #include <locale.h>
-#include <time.h>
 #include "telas.h"
 #include "utils.h"
 

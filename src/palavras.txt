@@ -57,3 +57,5 @@ planeta
 desenvolvimento
 mamute
 oportunidade
+cebola
+teclado
