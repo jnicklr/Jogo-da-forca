@@ -1,4 +1,3 @@
-#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -109,8 +108,10 @@ int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 				}
 			}
 			
-			letras_chutadas[contador_letras]=letra_escolhida_jogador;
-			contador_letras++;
+			if (verificarFormato(letra_escolhida_jogador)){
+				letras_chutadas[contador_letras]=letra_escolhida_jogador;
+				contador_letras++;
+			}
 		}
 	}
 	

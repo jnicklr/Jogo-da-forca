@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
 #include <string.h>
 #include <time.h>
 
 typedef struct {
-	char nome[30];
+	char nome[50];
 	int pontos;
 } JOGADOR;
 
@@ -95,67 +94,72 @@ int verificarFormato(char c) {
 void adicionarPalavra() {
 	
     FILE *arquivo;
-    char nova_palavra[100];
 
     arquivo = fopen("palavras.txt", "a+");
 
     if (arquivo == NULL) {
-        perror("Erro ao abrir o arquivo");
+        perror("Erro ao abrir o arquivo ou ele não existe\n");
         exit(1);
     }
+    
+    char nova_palavra[100];
 
     printf("Digite a nova palavra a ser adicionada: ");
-    fgets(nova_palavra, sizeof(nova_palavra), stdin);
-
+    scanf("%50[^\n]s", nova_palavra);
+	fflush(stdin);
    
-    size_t length = strlen(nova_palavra);
-    if (nova_palavra[length - 1] == '\n') {
-        nova_palavra[length - 1] = '\0';
-    }
-
+	int palavra_valida = 1;
+    int tamanho_palavra = strlen(nova_palavra);
    
     for (int i = 0; nova_palavra[i] != '\0'; i++) {
-        if (!verificarFormato(nova_palavra[i]) || nova_palavra[i] == ' ') {
+        if (!verificarFormato(nova_palavra[i])) {
             printf("Tentativa inválida. A palavra deve conter apenas letras minúsculas, sem acentos, e sem espaços.\n");
-            printf("Apenas a primeira palavra será gravada.\n");
-            fclose(arquivo);
+            palavra_valida = 0;
+            break;
         }
     }
    
-    fprintf(arquivo, "%s\n", nova_palavra);
+	if (palavra_valida){
+		fprintf(arquivo, "%s\n", nova_palavra);
+		printf("Palavra(s) adicionada(s) com sucesso!\n");
+	}
+	
     fclose(arquivo);
-    printf("Palavra(s) adicionada(s) com sucesso!\n");
 }
 
 char * pegarPalavraAleatoria() {
+	
     FILE *arquivo;
+    
     arquivo = fopen("palavras.txt", "r");
+    
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo.\n");
         exit(1);
     }
 
-    int num_palavras = 0;
+    int numero_palavras = 0;
     char c;
-    for (c = getc(arquivo); c != EOF; c = getc(arquivo)) {
-        if (c == '\n') {
-            num_palavras++;
+    
+    while((c = fgetc(arquivo)) != EOF){
+    	if (c == '\n') {
+            numero_palavras++;
         }
-    }
+	}
 
     srand(time(0));
-    int indice_aleatorio = rand() % num_palavras;
+    int indice_aleatorio = rand() % numero_palavras;
 
     rewind(arquivo);
 
-    char palavra[50];  // Supondo que nenhuma palavra tenha mais de 50 caracteres
+    char palavra[100];
     for (int i = 0; i <= indice_aleatorio; i++) {
         fscanf(arquivo, "%s", palavra);
     }
 
     fclose(arquivo);
 
-    char *palavra_aleatoria = (char*)malloc(strlen(palavra) + 1);
+    char * palavra_aleatoria = (char*)malloc(strlen(palavra) + 1);
     strcpy(palavra_aleatoria, palavra);
 
     return palavra_aleatoria;
@@ -174,6 +178,7 @@ void mostrarRanking(JOGADOR * jogadores, int quantidade_jogadores){
             }
         }
     }
+    
 	printf("----------------------------------\n");
 	printf("|         Ranking da Partida     |\n");
 	printf("----------------------------------\n");
