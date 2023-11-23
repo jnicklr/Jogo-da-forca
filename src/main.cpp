@@ -16,7 +16,7 @@ int main(){
 	
 	telaCarregamento();
 	
-	int opcao;
+	int opcao; // usado para decidir as opções do menu principal.
 	int logado = 1;
 	
 	while (logado){
@@ -64,19 +64,19 @@ int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 	
 	int quantidade_acertos = 0;
 	int vidas_restantes = 6;
-	int contador_letras = 0;
-	int contador_jogadores = 0;
+	int contador_letras = 0; // contador criado para iterar e adicionar a letra digitada em letras_chutadas
+	int contador_jogadores = 0; // contador criado para iterar pelos jogadores.
 	char letra_escolhida_jogador;
 	
 	int continuar_jogo = 1;
 	
 	while (continuar_jogo){
+		// verificação se o jogo deve continuar ou não com base na vida e nos acertos.
 		if (vidas_restantes == 0 || quantidade_acertos == quantidade_letras_unicas){
 			verificarVitoria(vidas_restantes, quantidade_acertos, quantidade_letras_unicas, jogadores, contador_jogadores, palavra_aleatoria);
 			continuar_jogo = 0;
 		} else {
 			system("cls");
-		
 			printf("----------------------------------\n");
 			printf("|         Status do Jogo         |\n");
 			printf("----------------------------------\n");
@@ -92,7 +92,9 @@ int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 			printf("Digite uma letras: ");
 			scanf("%c", &letra_escolhida_jogador);
 			fflush(stdin);
-				
+			
+			// vai verificar se um jogador acertou a letra.
+			// se for verdadeiro o jogador ganha um ponto.
 			if (verificarAcerto(letra_escolhida_jogador, letras_unicas, letras_chutadas) == 1){
 				quantidade_acertos += 1;
 				for (int i = 0; i < strlen(palavra_aleatoria); i++){
@@ -101,6 +103,7 @@ int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 					}
 				}
 			} else {
+				// se for falso o jogador perde a vida e muda de jogador.
 				vidas_restantes -= 1;
 				contador_jogadores++;
 				if (contador_jogadores >= quantidade_jogadores){
@@ -108,6 +111,7 @@ int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 				}
 			}
 			
+			// vai adicionar as letras digitadas pelo jogador às letras chutadas.
 			if (verificarFormato(letra_escolhida_jogador)){
 				letras_chutadas[contador_letras]=letra_escolhida_jogador;
 				contador_letras++;
@@ -115,6 +119,7 @@ int iniciarJogo(JOGADOR * jogadores, int quantidade_jogadores){
 		}
 	}
 	
+	// liberando a memória das variáveis que não vão ser mais usadas.
 	free(palavra_aleatoria);
 	free(letras_censuradas);
 	free(letras_unicas);
@@ -131,11 +136,12 @@ void criarPartida(){
 				    
 	jogadores = (JOGADOR *)malloc(sizeof(JOGADOR) * quantidade_jogadores);
 					    
+	// preenchendo cada jogador.
 	for (int i = 0; i < quantidade_jogadores; i++){
 		printf("Digite o nome do %d° jogador: ", i+1);
 		scanf("%50[^\n]s", &(jogadores[i].nome));
 		fflush(stdin);
-		jogadores[i].pontos = 0;
+		jogadores[i].pontos = 0; // inicializando os pontos de cada jogador.
 	}
 	
 	char repetir_jogo = 'S';
